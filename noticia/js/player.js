@@ -146,12 +146,12 @@ function initKiwiPlayer() {
     player.volume = 1;
     player.muted = false;
     player.elements.poster.style.display = 'none';
-    if (player.currentTime > 1595 && dnone) {
+    if (player.currentTime > 1627 && dnone) {
       // console.log('oi');
       // 1900 secs
       document.getElementById('hid').style.display = "block";
       document.getElementById('hid2').style.display = "block";
-      document.getElementById('hid3').style.display = "block";
+      // document.getElementById('hid3').style.display = "block";
       dnone = false;
     }
     //updateProgress(player.currentTime, player.duration);
