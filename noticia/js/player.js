@@ -3,11 +3,10 @@
 
 // All rights reserved to Oelez Laniavitá ®
 // This code loads the IFrame Player API code asynchronously.
-// var tag = document.createElement('script');
-//
-// tag.src = "https://www.youtube.com/iframe_api";
-// var firstScriptTag = document.getElementsByTagName('script')[0];
-// firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+var tag = document.createElement('script');
+
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
 
 
 ! function(a) {
@@ -74,17 +73,59 @@
     define.amd ? define("isMobile", [], a.isMobile = s()) : a.isMobile = s()
 }(this);
 
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+
+
+// This function creates an <iframe> (and YouTube player)
+//    after the API code downloads.
+var player1;
+
+function onYouTubeIframeAPIReady() {
+  player1 = new YT.Player('p', {
+    height: '',
+    width: '720',
+    videoId: '4PZF-jEJDc0',
+    playerVars: {
+      'autoplay': 1,
+      'controls': 0
+    },
+    events: {
+      'onReady': onPlayerReady,
+      'onStateChange': onPlayerStateChange
+    }
+  });
+}
+
+// The API will call this function when the video player is ready.
+function onPlayerReady(event) {
+  event.target.setVolume(0);
+  event.target.playVideo();
+  event.target.seekTo(0, false);
+}
+
+//  The API calls this function when the player's state changes.
+//    The function indicates that when playing a video (state=1),
+//    the player should play for six seconds and then stop.
+var done = false;
+
+function onPlayerStateChange(event) {
+  console.log(event);
+  if (event.data == YT.PlayerState.PLAYING && !done) {
+
+  }
+}
+
 
 
 function stopVideo() {
-  player_vt.togglePlay();
-  player_vt.destroy();
+  player1.stopVideo();
+  player1.destroy();
   document.getElementsByClassName('first-layer')[0].style.display = "none";
-  document.getElementById('player0_vt').style.display = "none";
-  document.getElementById('player0_vt').remove();
+  document.getElementById('p').style.display = "none";
 }
 
-//var progress = document.getElementById('progress-bar');
+var progress = document.getElementById('progress-bar');
 
 function updateProgress(player_time, player_duration) {
   let percentage = (100 * player_time) / player_duration;
@@ -107,122 +148,68 @@ function updateProgress(player_time, player_duration) {
 }
 
 
-function exitFullscreen() {
-  if (document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement ||
-    document.msFullscreenElement) {
-    document.webkitExitFullscreen();
-  }
-}
-
-
 
 // ------------------------ CONTROLS ------------------------------
 
-function mobilePause() {
-  if (!player.paused) {
-    player.toggleControls();
-    player.togglePlay();
-  }
-}
+
 
 // Change "{}" to your options:
 // by Brian Ramirez
-var player, player_vt;
+const player = new Plyr("#player", {
+  type: 'video',
+  youtube: {
+    noCookie: false,
+    rel: 0,
+    showinfo: 0,
+    iv_load_policy: 3,
+    modestbranding: 1,
+    autoplay: 1
+  },
+  controls: ['play-large', 'play', ],
+  muted: false,
+});
 
-function initKiwiPlayer() {
-  player = new Plyr("#player0", {
-    type: 'video',
-    controls: ['play-large', 'play', ],
-    muted: false,
-  });
+// Expose player so it can be used from the console
+window.player = player;
 
-  // Expose player so it can be used from the console
-  window.player = player;
-
-
-  var dnone = true;
-  player.on('timeupdate', () => {
-    exitFullscreen();
-    player.volume = 1;
-    player.muted = false;
-    player.elements.poster.style.display = 'none';
-    if (player.currentTime > 1627 && dnone) {
-      // console.log('oi');
-      // 1900 secs
-      document.getElementById('hid').style.display = "block";
-      document.getElementById('hid2').style.display = "block";
-      // document.getElementById('hid3').style.display = "block";
-      dnone = false;
-    }
-    //updateProgress(player.currentTime, player.duration);
+var dnone = true;
+player.on('timeupdate', () => {
+  player.volume = 1;
+  player.muted = false;
+  if (player.currentTime > 1627 && dnone) {
+    console.log('oi');
+    // 1900 secs
+    document.getElementById('hid').style.display = "block";
+    document.getElementById('hid2').style.display = "block";
+    dnone = false;
+  }
+  updateProgress(player.currentTime, player.duration);
 
 
-  });
+});
 
-  player.on('ready', () => {
+player.on('ready', () => {
+  player.currentTime = 0;
+  player.volume = 1;
+  document.getElementsByClassName("plyr__controls")[0].setAttribute(
+    "onClick", "player.toggleControls(); player.togglePlay();");
+});
+
+var sound = false;
+
+player.on('playing', () => {
+  player.volume = 1;
+  player.muted = false;
+  if (!sound) {
     player.currentTime = 0;
-    player.volume = 0;
-    // player.elements.original.setAttribute(
-    // "onClick", "player.toggleControls(); player.togglePlay();");
-    // player.elements.poster.setAttribute(
-    // "onClick", "player.toggleControls(); player.togglePlay();");
-    document.getElementsByClassName("plyr__controls")[0].setAttribute(
-      "onClick", "player.toggleControls(); player.togglePlay();");
-    // player.elements.container.setAttribute(
-    //   "onClick", "mobilePause()");
-  });
-
-  var sound = false;
-
-  player.on('playing', () => {
-    player.volume = 1;
-    player.muted = false;
-    player.elements.poster.style.opacity = 0;
-    player.elements.poster.style.display = 'none';
-    if (!sound) {
-      player.currentTime = 0;
-      sound = true;
-      if (isMobile.any) {
-        setTimeout(() => {
-          player.togglePlay();
-        }, 300)
-        setTimeout(() => {
-          player.togglePlay();
-        }, 300)
-      }
+    sound = true;
+    if (isMobile.any) {
       setTimeout(() => {
-        player.elements.poster.style.backgroundImage =
-          "url('https://img.imageboss.me/atm/cdn/u/tMMwj0VoLzWNixZhj57bABQbGYB3/l/zBMAlp4474495.png')";
-      }, 1000);
+        player.togglePlay();
+      }, 300)
+      setTimeout(() => {
+        player.togglePlay();
+      }, 300)
     }
-
-  });
-
-  player.on('pause', () => {
-    player.elements.poster.style.display = 'block';
-    player.elements.poster.style.opacity = 1;
-    player.elements.poster.style.zIndex = 8;
-    exitFullscreen();
-  });
-
-
-
-  player_vt = new Plyr("#player0_vt", {
-    type: 'video',
-    controls: [],
-    muted: true,
-    playsinline: true,
-    loop: {
-      active: true
-    },
-  });
-
-  player_vt.on('ready', () => {
-    player_vt.currentTime = 0;
-    player_vt.volume = 0;
-    player_vt.togglePlay();
-    player_vt.elements.container.style =
-      "position: absolute;z-index: 109;top: 0;width: 100%;";
-  });
-
-}
+  }
+});

@@ -10,16 +10,16 @@ textarea:focus, input:focus{
 
 *{color:inherit;box-sizing:border-box;text-rendering:optimizeLegibility;font-family: sans-serif}
 
-body{margin:0;background:#000;}
+body{margin:0;background:#0c0c0c}
 
 a,b,u,i,span{font-family:inherit}
 
 b{font-weight:700}
 
-u{text-decoration-color:#CB0000;cursor:pointer}
+u{text-decoration-color:#0ed93b;cursor:pointer}
 
 #navbar{
-  background: #CB0000;
+  background: #000;
 }
 
 #smartplayer {
@@ -92,7 +92,7 @@ main {
     }
     main {
         background-attachment:initial;
-        padding: 2em 0px 10em 0px;
+        padding: 1em 0px 10em 0px;
     }
 
     main .wrapper {
@@ -214,7 +214,7 @@ footer p a{text-decoration:underline}
 
 .cta:hover, .cta:focus {
     color: #fff !important;
-    background-image: linear-gradient(to bottom, #ff6600 0%, #ff0000 100%) !important;
+    background-image: linear-gradient(to bottom, #ff8d08 0%, #ff6600 100%) !important;
     /* text-decoration:underline; */
 }
 
